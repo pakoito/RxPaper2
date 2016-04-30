@@ -20,7 +20,7 @@ RxPaper is subject to the same restrictions as the current version of Paper when
 
 I personally recommend using immutable objects, as it makes data handling way simpler on both sides. An immutable object has an all-args constructor, doesn't allow any null fields, and keeps all fields public and final. Like any other dto in Java, it is recommended to implement your own version of `equals`, `hashCode` and `toString`.
 
-As of Paper 1.5 you can also add your own serializers by calling `Paper.addSerializer()`. Partial structure changes are supported too, as described on [Paper's README]((https://github.com/pilgr/Paper#handle-data-structure-changes)).
+As of Paper 1.5 you can also add your own serializers by calling `Paper.addSerializer()`. Partial structure changes are supported too, as described on [Paper's README](https://github.com/pilgr/Paper#handle-data-structure-changes).
 
 ###Initialization
 
