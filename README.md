@@ -121,7 +121,7 @@ readOrDefault.subscribe(new SingleSubscriber<ComplexObject>() {
 
 If the subscriber is not of the same type as the value stored expect a `ClassCastException`.
 
-Make sure to read the rules on how object models are handler on the section above.
+Make sure to read the rules on [how object models are handled](https://github.com/pakoito/RxPaper#object-model-handling) on the section above.
 
 ####Observing changes on a key
 
