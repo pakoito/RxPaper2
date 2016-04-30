@@ -63,7 +63,7 @@ Works with a custom book with the provided id/name, and executes operations on a
 Write is a `Completable` operation, a subset of `Observable<T>` without a return value, just success/error. Completables can be converted back to Observables by using the operator `toObservable()`.
 
 ```java
-RxPaperBook defaultBook = RxPaper.with();
+RxPaperBook book = RxPaper.with("my-book");
 Completable write = book.write(key, value);
 // Because RxJava is lazily evaluated, the operation is not executed until the Observable is subscribed.
 write.subscribe(new Completable.CompletableSubscriber() {
