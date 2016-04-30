@@ -22,6 +22,10 @@ I personally recommend using immutable objects, as it makes data handling way si
 
 As of Paper 1.5 you can also add your own serializers by calling `Paper.addSerializer()`. Partial structure changes are supported too, as described on [Paper's README](https://github.com/pilgr/Paper#handle-data-structure-changes).
 
+###Threading
+
+All operations are run on the [Scheduler](https://github.com/Froussios/Intro-To-RxJava/blob/master/Part%204%20-%20Concurrency/1.%20Scheduling%20and%20threading.md#schedulers) provided on the constructor. When subscribing to them, specially if using the data to be applied to UI; it's recommended to use the operator `observeOn(Scheduler)` to see the changes on any desired thread, i.e. Android's main thread.
+
 ###Initialization
 
 Before the library is usable it requires initializing the underlying Paper library. You only have to initialize RxPaper by calling:
