@@ -27,7 +27,7 @@ As of Paper 1.5 you can also add your own serializers by calling `Paper.addSeria
 Before the library is usable it requires initializing the underlying Paper library. You only have to initialize RxPaper by calling:
 
 ```java
-RxPaper.init(context);
+RxPaperBook.init(context);
 ```
 
 ###Working on a book
