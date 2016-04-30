@@ -204,8 +204,8 @@ or to your `pom.xml`
 
 ##License
 
-Copyright (c) pakoito 2016
+Copyright (c) pakoito 2016 & cesar ferreira 2015 
 
-The Apache Software License, Version 2.0
+The MIT License (MIT)
 
 See LICENSE.md
