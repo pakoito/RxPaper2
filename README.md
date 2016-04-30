@@ -60,7 +60,7 @@ Works with a custom book with the provided id/name, and executes operations on a
 
 ###Writing a value
 
-Write is a `Completable` operation, a subset of `Observable<T>` without a return value, just success/error.
+Write is a `Completable` operation, a subset of `Observable<T>` without a return value, just success/error. Completables can be converted back to Observables by using the operator `toObservable()`.
 
 ```java
 RxPaperBook defaultBook = RxPaper.with();
@@ -86,9 +86,7 @@ write.subscribe(new Completable.CompletableSubscriber() {
 
 ###Reading a value
 
-Reading is a `Single<T>` operation, a subset of `Observable<T>` that returns just a single element and then completes. 
-
-Reading comes in two flavours:
+Reading is a `Single<T>` operation, a subset of `Observable<T>` that returns just a single element and then completes. Singles can be converted back to Observables by using the operator `toObservable()`. Reading comes in two flavours:
 
 ```java
 Single<ComplexObject> read = book.read(key);
@@ -104,7 +102,8 @@ read.subscribe(new SingleSubscriber<ComplexObject>() {
             }
         });
 
-Single<ComplexObject> readOrDefault = book.read(key, new ComplexObject());
+ComplexObject defaultValue = new ComplexObject();
+Single<ComplexObject> readOrDefault = book.read(key, defaultValue);
 readOrDefault.subscribe(new SingleSubscriber<ComplexObject>() {
             @Override
             public void onSuccess(ComplexObject value) {
@@ -120,7 +119,7 @@ readOrDefault.subscribe(new SingleSubscriber<ComplexObject>() {
 
 `read(key)` fails with `IllegalArgumentException` if the key is not found. `read(key, defaultValue)` returns a defualt value if the key is not found.
 
-If the subscriber is not of the same type as the value stores, expect a `ClassCastException`.
+If the subscriber is not of the same type as the value stored expect a `ClassCastException`.
 
 Make sure to read the rules on how object models are handler on the section above.
 
@@ -175,6 +174,7 @@ destroy.subscribe(new Completable.CompletableSubscriber() { /* ... */ });
 
 Add as a dependency to your `build.gradle`
 
+```groovy
     repositories {
         ...
         maven { url "https://jitpack.io" }
@@ -186,9 +186,11 @@ Add as a dependency to your `build.gradle`
         compile 'com.github.pakoito:RxPaper:1.0.+'
         ...
     }
+```
 
 or to your `pom.xml`
 
+```xml
     <repositories>
         <repository>
             <id>jitpack.io</id>
@@ -201,6 +203,7 @@ or to your `pom.xml`
         <artifactId>RxPaper</artifactId>
         <version>1.0.0</version>
     </dependency>
+```
 
 ##License
 
