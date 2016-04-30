@@ -32,7 +32,7 @@ RxPaperBook.init(context);
 
 ###Working on a book
 
-RxPaper works on books, and each is a file on the system. A book is only open and closed on an operation, but you can check Paper repository for specifics. To make sure no operations are done on the main thread, any operations done on a book can be executed on one Scheduler provided in the constructor. To create an instance of RxPaper the library provides several flavours.
+RxPaper works on books, and each is a file on the system. A book is only open and closed on an operation, but you can check Paper repository for specifics. To make sure no operations are done on the main thread, any operations done on a book can be executed on one [Scheduler](https://github.com/Froussios/Intro-To-RxJava/blob/master/Part%204%20-%20Concurrency/1.%20Scheduling%20and%20threading.md#schedulers) provided in the constructor. To create an instance of RxPaper the library provides several flavours.
 
 ```java
 RxPaperBook.with();
