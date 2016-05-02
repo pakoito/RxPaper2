@@ -42,7 +42,7 @@ import io.paperdb.Book;
 import io.paperdb.Paper;
 
 /**
- * Wrapper class with helpers to handle PaperDB operations.
+ * Adapter class with a new interface to perform PaperDB operations.
  * 
  * @author pakoito
  */
@@ -69,7 +69,7 @@ public class RxPaperBook {
     /**
      * Initializes the underlying {@link Paper} database.
      * <p/>
-     * This operation is required only once.
+     * This operation is required only once, but can be called multiple times safely.
      * 
      * @param context application context
      */
@@ -146,7 +146,6 @@ public class RxPaperBook {
      *
      * @param key object key is used as part of object's file name
      * @param value object to save, must have no-arg constructor, can't be null.
-     * @param <T> object type
      * @return this Book instance
      */
     public <T> Completable write(final String key, final T value) {
@@ -163,12 +162,10 @@ public class RxPaperBook {
      * Instantiates saved object using original object class (e.g. LinkedList). Support limited
      * backward and forward compatibility: removed fields are ignored, new fields have their default
      * values.
-     * <p/>
-     * All instantiated objects must have all-arg constructors.
      *
      * @param key object key to read
-     * @param defaultValue will be returned if key doesn't exist
-     * @return the saved object instance or null
+     * @param defaultValue value to be returned if key doesn't exist
+     * @return the saved object instance or defaultValue
      */
     public <T> Single<T> read(final String key, final T defaultValue) {
         return Single.fromCallable(new Func0<T>() {
@@ -183,8 +180,6 @@ public class RxPaperBook {
      * Instantiates saved object using original object class (e.g. LinkedList). Support limited
      * backward and forward compatibility: removed fields are ignored, new fields have their default
      * values.
-     * <p/>
-     * All instantiated objects must have all-arg constructors.
      *
      * @param key object key to read
      * @return the saved object instance
@@ -204,8 +199,6 @@ public class RxPaperBook {
 
     /**
      * Delete saved object for given key if it is exist.
-     *
-     * @param key object key
      */
     public Completable delete(final String key) {
         return Completable.fromAction(new Action0() {
