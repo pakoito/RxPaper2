@@ -10,7 +10,7 @@ Sometimes you need storage for arbitrary objects on disc, but do not want to sto
 
 RxPaper allows access to Paper, which is a NoSQL data storage for Android that allows you to save arbitrary objects in system files called Books. Serialization and deserialization is done using efficient [Kryo](https://github.com/EsotericSoftware/kryo).
 
-The Paper/Kryo combination supports some partial data structure changes. Chech [Paper's README](https://github.com/pilgr/Paper#handle-data-structure-changes) for more information.
+The Paper/Kryo combination supports some partial data structure changes. Check [Paper's README](https://github.com/pilgr/Paper#handle-data-structure-changes) for more information.
 
 ##Usage
 
