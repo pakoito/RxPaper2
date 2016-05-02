@@ -131,7 +131,7 @@ Make sure to read the rules on [how object models are handled](https://github.co
 
 ####Observing changes on a key
 
-All write operations are naively forwarded into a `PublishSubject<?>` by default, which makes it possible to observe all changes for a specific key.Observing is an `Observable<T>` operation that never completes.
+All write operations are naively forwarded into a `PublishSubject<?>` by default, which makes it possible to observe all changes for a specific key. Observing is an `Observable<T>` operation that never completes.
 
 ```java
 Observable<ComplexObject> observe = book.observe(key, ComplexObject.class);
