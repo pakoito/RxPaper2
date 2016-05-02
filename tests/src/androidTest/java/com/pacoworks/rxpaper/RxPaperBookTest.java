@@ -88,6 +88,9 @@ public class RxPaperBookTest {
 
             @Override
             public void onError(Throwable e) {
+                if (!(e instanceof ClassCastException)) {
+                    Assert.fail(e.getMessage());
+                }
             }
 
             @Override
