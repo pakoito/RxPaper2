@@ -151,7 +151,7 @@ exists.subscribe(new SingleSubscriber<Boolean>() { /* ... */ });
 
 ####Delete
 
-Delete is a `Completable` operation. Deletes data stored for a key on the current book. Will still succeed even if the key is not found.
+Delete is a `Completable` operation. Deletes data stored for a key on the current book. It will still succeed even if the key is not found.
 
 ```java
 Completable delete = book.delete(key);
