@@ -45,7 +45,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
 
-    compile 'com.github.pakoito:RxPaper:0.1.0'
+    compile 'com.github.pakoito:RxPaper:1.0.0'
 
     testCompile 'junit:junit:4.12'
     androidTestCompile "com.android.support.test:runner:0.5"
