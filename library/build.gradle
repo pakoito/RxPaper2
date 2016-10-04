@@ -41,7 +41,7 @@ android {
 
 dependencies {
     compile ('io.paperdb:paperdb:1.5') {
-        exclude module: 'protobuf-java'
+        exclude group: 'com.google.protobuf'
     }
 
     compile 'io.reactivex:rxjava:1.2.0'
