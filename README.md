@@ -6,7 +6,7 @@ RxPaper is an [RxJava](https://github.com/ReactiveX/RxJava) wrapper for the cool
 
 ##Rationale
 
-Sometimes you need storage for arbitrary objects on disc, but do not want to store them in a relational database with all the associated problems: writing ORMs, composing the queries, updating scripts. For this purpose NoSQL data storages were created: schemaless document repositories where to store arbitrary data that's not structured.
+Sometimes you need storage for arbitrary objects on disk, but do not want to store them in a relational database with all the associated problems: writing ORMs, composing the queries, updating scripts. For this purpose NoSQL data storages were created: schemaless document repositories where to store arbitrary data that's not structured.
 
 RxPaper allows access to Paper, which is a NoSQL data storage for Android that allows you to save arbitrary objects in system files called Books. Serialization and deserialization is done using efficient [Kryo](https://github.com/EsotericSoftware/kryo).
 
