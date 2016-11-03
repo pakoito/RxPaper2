@@ -22,12 +22,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '24.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0.0"
     }
@@ -40,11 +40,9 @@ android {
 }
 
 dependencies {
-    compile ('io.paperdb:paperdb:1.5') {
-        exclude group: 'com.google.protobuf'
-    }
+    compile ('io.paperdb:paperdb:2.0')
 
-    compile 'io.reactivex:rxjava:1.2.0'
+    compile 'io.reactivex:rxjava:1.2.2'
 
     testCompile 'junit:junit:4.12'
 }
