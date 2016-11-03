@@ -12,6 +12,10 @@ RxPaper allows access to Paper, which is a NoSQL data storage for Android that a
 
 The Paper/Kryo combination supports some partial data structure changes. Check [Paper's README](https://github.com/pilgr/Paper#handle-data-structure-changes) for more information.
 
+##Updating from 1.X
+
+As [PaperDb 2.0](https://github.com/pilgr/Paper/releases/tag/2.0) has updated from Kryo 3 to [Kryo 4](https://github.com/EsotericSoftware/kryo/releases/tag/kryo-parent-4.0.0), the internal representation model has changed. PaperDb deals with these changes internally, so the migration should be transparent. If you find any data compatibility bug, please [create a ticket](https://github.com/pilgr/Paper/issues/new).
+
 ##Usage
 
 ###Object model handling
