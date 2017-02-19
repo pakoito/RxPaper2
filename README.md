@@ -4,7 +4,7 @@ RxPaper is a [RxJava](https://github.com/ReactiveX/RxJava) wrapper for the cool 
 
 ![Paper icon](https://raw.githubusercontent.com/pilgr/Paper/master/paper_icon.png)
 
-For the RxJava1 version, please go to [RxPaper](https://www.github.com/pakoito/RxPaper)
+For the RxJava1 version, please go to [RxPaper](https://www.github.com/pakoito/RxPaper).
 
 ##Rationale
 
@@ -13,10 +13,6 @@ Sometimes you need storage for arbitrary objects on disk, but do not want to sto
 RxPaper allows access to Paper, which is a NoSQL data storage for Android that allows you to save arbitrary objects in system files called Books. Serialization and deserialization is done using efficient [Kryo](https://github.com/EsotericSoftware/kryo).
 
 The Paper/Kryo combination supports some partial data structure changes. Check [Paper's README](https://github.com/pilgr/Paper#handle-data-structure-changes) for more information.
-
-##Updating from 1.X
-
-As [PaperDb 2.0](https://github.com/pilgr/Paper/releases/tag/2.0) has updated from Kryo 3 to [Kryo 4](https://github.com/EsotericSoftware/kryo/releases/tag/kryo-parent-4.0.0), the internal representation model has changed. PaperDb deals with these changes internally, so the migration should be transparent. If you find any data compatibility bug, please [create a ticket](https://github.com/pilgr/Paper/issues/new).
 
 ##Usage
 
@@ -137,10 +133,10 @@ Make sure to read the rules on [how object models are handled](https://github.co
 
 ####Observing changes on a key
 
-All write operations are naively forwarded into a `PublishSubject<?>` by default, which makes it possible to observe all changes for a specific key. Observing is an `Observable<T>` operation that never completes.
+All write operations are naively forwarded into a `PublishSubject<?>` by default, which makes it possible to observe all changes for a specific key. Observing is a `Flowable<T>` operation that never completes.
 
 ```java
-Observable<ComplexObject> observe = book.observe(key, ComplexObject.class);
+Flowable<ComplexObject> observe = book.observe(key, ComplexObject.class);
 observe.subscribe(new Subscriber() { /* ... */ });
 ```
 
