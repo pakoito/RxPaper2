@@ -219,7 +219,7 @@ or to your `pom.xml`
 
 ##License
 
-Copyright (c) 2016 pakoito & 2015 César Ferreira
+Copyright (c) 2017 pakoito & 2015 César Ferreira
 
 The MIT License (MIT)
 
