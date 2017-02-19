@@ -1,8 +1,10 @@
-#RxPaper
+# RxPaper2
 
-RxPaper is an [RxJava](https://github.com/ReactiveX/RxJava) wrapper for the cool [Paper](https://github.com/pilgr/Paper) library. It's a clean rewrite of the original [RxPaper](http://www.github.com/cesarferreira/rxpaper) library by [César Ferreira](http://www.github.com/cesarferreira).
+RxPaper is a [RxJava](https://github.com/ReactiveX/RxJava) wrapper for the cool [Paper](https://github.com/pilgr/Paper) library. It's a clean rewrite of the original [RxPaper](http://www.github.com/cesarferreira/rxpaper) library by [César Ferreira](http://www.github.com/cesarferreira).
 
 ![Paper icon](https://raw.githubusercontent.com/pilgr/Paper/master/paper_icon.png)
+
+For the RxJava1 version, please go to [RxPaper](https://www.github.com/pakoito/RxPaper)
 
 ##Rationale
 
@@ -193,7 +195,7 @@ Add as a dependency to your `build.gradle`
     
     dependencies {
         ...
-        compile 'com.github.pakoito:RxPaper:2.0.0'
+        compile 'com.github.pakoito:RxPaper2:1.0.0'
         ...
     }
 ```
@@ -210,8 +212,8 @@ or to your `pom.xml`
     
     <dependency>
         <groupId>com.github.pakoito</groupId>
-        <artifactId>RxPaper</artifactId>
-        <version>2.0.0</version>
+        <artifactId>RxPaper2</artifactId>
+        <version>1.0.0</version>
     </dependency>
 ```
 
