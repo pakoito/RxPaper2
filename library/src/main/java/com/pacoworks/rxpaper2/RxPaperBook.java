@@ -19,27 +19,28 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.pacoworks.rxpaper;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import rx.Completable;
-import rx.Observable;
-import rx.Scheduler;
-import rx.Single;
-import rx.functions.Action0;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
+package com.pacoworks.rxpaper2;
 
 import android.content.Context;
 import android.util.Pair;
 
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.paperdb.Book;
 import io.paperdb.Paper;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import io.reactivex.Single;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Adapter class with a new interface to perform PaperDB operations.
@@ -53,8 +54,7 @@ public class RxPaperBook {
 
     final Scheduler scheduler;
 
-    final SerializedSubject<Pair<String, ?>, Pair<String, ?>> updates = new SerializedSubject<>(
-            PublishSubject.<Pair<String, ?>> create());
+    final Subject<Pair<String, ?>> updates = PublishSubject.<Pair<String, ?>> create().toSerialized();
 
     private RxPaperBook(Scheduler scheduler) {
         this.scheduler = scheduler;
@@ -149,13 +149,25 @@ public class RxPaperBook {
      * @return this Book instance
      */
     public <T> Completable write(final String key, final T value) {
-        return Completable.fromAction(new Action0() {
+        return Completable.fromAction(new Action() {
             @Override
-            public void call() {
+            public void run() {
                 book.write(key, value);
-                updates.onNext(Pair.create(key, value));
             }
-        }).subscribeOn(scheduler);
+        })
+        // FIXME in RxJava1 the error would be propagated to updates.
+        // In RxJava2 the error happens on the Completable this method returns.
+        // This andThen block reproduces the behavior in RxJava1.
+        .andThen(Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                try {
+                    updates.onNext(Pair.create(key, value));
+                } catch (Throwable t) {
+                    updates.onError(t);
+                }
+            }
+        })).subscribeOn(scheduler);
     }
 
     /**
@@ -168,7 +180,7 @@ public class RxPaperBook {
      * @return the saved object instance or defaultValue
      */
     public <T> Single<T> read(final String key, final T defaultValue) {
-        return Single.fromCallable(new Func0<T>() {
+        return Single.fromCallable(new Callable<T>() {
             @Override
             public T call() {
                 return book.read(key, defaultValue);
@@ -185,7 +197,7 @@ public class RxPaperBook {
      * @return the saved object instance
      */
     public <T> Single<T> read(final String key) {
-        return Single.fromCallable(new Func0<T>() {
+        return Single.fromCallable(new Callable<T>() {
             @Override
             public T call() {
                 final T read = book.read(key);
@@ -201,9 +213,9 @@ public class RxPaperBook {
      * Delete saved object for given key if it is exist.
      */
     public Completable delete(final String key) {
-        return Completable.fromAction(new Action0() {
+        return Completable.fromAction(new Action() {
             @Override
-            public void call() {
+            public void run() {
                 book.delete(key);
             }
         }).subscribeOn(scheduler);
@@ -216,7 +228,7 @@ public class RxPaperBook {
      * @return true if object with given key exists in Book storage, false otherwise
      */
     public Single<Boolean> exists(final String key) {
-        return Single.fromCallable(new Func0<Boolean>() {
+        return Single.fromCallable(new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 return book.exist(key);
@@ -230,7 +242,7 @@ public class RxPaperBook {
      * @return all keys
      */
     public Single<List<String>> keys() {
-        return Single.fromCallable(new Func0<List<String>>() {
+        return Single.fromCallable(new Callable<List<String>>() {
             @Override
             public List<String> call() {
                 return book.getAllKeys();
@@ -242,9 +254,9 @@ public class RxPaperBook {
      * Destroys all data saved in {@link Book}.
      */
     public Completable destroy() {
-        return Completable.fromAction(new Action0() {
+        return Completable.fromAction(new Action() {
             @Override
-            public void call() {
+            public void run() {
                 book.destroy();
             }
         }).subscribeOn(scheduler);
@@ -254,20 +266,22 @@ public class RxPaperBook {
      * Naive update subscription for saved objects. Subscription is filtered by key and type.
      *
      * @param key object key
+     * @param backPressureStrategy how the backpressure is handled downstream
      * @return hot observable
      */
-    public <T> Observable<T> observe(final String key, final Class<T> clazz) {
-        return updates.asObservable().filter(new Func1<Pair<String, ?>, Boolean>() {
-            @Override
-            public Boolean call(Pair<String, ?> stringPair) {
-                return stringPair.first.equals(key);
-            }
-        }).map(new Func1<Pair<String, ?>, Object>() {
-            @Override
-            public Object call(Pair<String, ?> stringPair) {
-                return stringPair.second;
-            }
-        }).ofType(clazz);
+    public <T> Flowable<T> observe(final String key, final Class<T> clazz, BackpressureStrategy backPressureStrategy) {
+        return updates.toFlowable(backPressureStrategy)
+                .filter(new Predicate<Pair<String, ?>>() {
+                    @Override
+                    public boolean test(Pair<String, ?> stringPair) {
+                        return stringPair.first.equals(key);
+                    }
+                }).map(new Function<Pair<String, ?>, Object>() {
+                    @Override
+                    public Object apply(Pair<String, ?> stringPair) {
+                        return stringPair.second;
+                    }
+                }).ofType(clazz);
     }
 
     /**
@@ -275,23 +289,25 @@ public class RxPaperBook {
      * <p/>
      * This method will return all objects for a key casted unsafely, and throw
      * {@link ClassCastException} if types do not match. For a safely checked and filtered version
-     * use {@link this#observe(String, Class)}.
+     * use {@link this#observe(String, Class, BackpressureStrategy)}.
      *
      * @param key object key
+     * @param backPressureStrategy how the backpressure is handled downstream
      * @return hot observable
      */
     @SuppressWarnings("unchecked")
-    public <T> Observable<T> observeUnsafe(final String key) {
-        return updates.asObservable().filter(new Func1<Pair<String, ?>, Boolean>() {
-            @Override
-            public Boolean call(Pair<String, ?> stringPair) {
-                return stringPair.first.equals(key);
-            }
-        }).map(new Func1<Pair<String, ?>, T>() {
-            @Override
-            public T call(Pair<String, ?> stringPair) {
-                return (T)stringPair.second;
-            }
-        });
+    public <T> Flowable<T> observeUnsafe(final String key, BackpressureStrategy backPressureStrategy) {
+        return updates.toFlowable(backPressureStrategy)
+                .filter(new Predicate<Pair<String, ?>>() {
+                    @Override
+                    public boolean test(Pair<String, ?> stringPair) {
+                        return stringPair.first.equals(key);
+                    }
+                }).map(new Function<Pair<String, ?>, T>() {
+                    @Override
+                    public T apply(Pair<String, ?> stringPair) {
+                        return (T) stringPair.second;
+                    }
+                });
     }
 }

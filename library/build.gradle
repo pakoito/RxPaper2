@@ -23,7 +23,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
 
     defaultConfig {
         minSdkVersion 15
@@ -42,7 +42,7 @@ android {
 dependencies {
     compile 'io.paperdb:paperdb:2.0'
 
-    compile 'io.reactivex:rxjava:1.2.2'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.6'
 
     testCompile 'junit:junit:4.12'
 }
