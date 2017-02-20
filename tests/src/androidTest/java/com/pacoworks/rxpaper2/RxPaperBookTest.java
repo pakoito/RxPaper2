@@ -279,7 +279,7 @@ public class RxPaperBookTest {
                         Assert.fail("Expected nothing");
                     }
                 });
-        book.write(key, wrongValue).subscribe();
+        book.write(key, wrongValue).test().assertComplete().assertNoErrors();
     }
 
     @Test
@@ -299,7 +299,7 @@ public class RxPaperBookTest {
         updatesSubscriber.assertValues(value, newValue);
         // Error value
         final int wrongValue = 3;
-        book.write(key, wrongValue).subscribe();
+        book.write(key, wrongValue).test().assertComplete().assertNoErrors();
         updatesSubscriber.assertValueCount(2);
         updatesSubscriber.assertValues(value, newValue);
         updatesSubscriber.assertNoErrors();
