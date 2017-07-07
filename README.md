@@ -191,7 +191,7 @@ Add as a dependency to your `build.gradle`
     
     dependencies {
         ...
-        compile 'com.github.pakoito:RxPaper2:1.0.0'
+        compile 'com.github.pakoito:RxPaper2:1.1.0'
         ...
     }
 ```
@@ -209,7 +209,7 @@ or to your `pom.xml`
     <dependency>
         <groupId>com.github.pakoito</groupId>
         <artifactId>RxPaper2</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 ```
 
