@@ -276,7 +276,7 @@ public class RxPaperBookTest {
 
                     @Override
                     public void onNext(ComplexObject complexObject) {
-                        Assert.fail("Expected nothing");
+                        Assert.assertEquals(newValue, complexObject);
                     }
                 });
         book.write(key, wrongValue).test().assertComplete().assertNoErrors();
