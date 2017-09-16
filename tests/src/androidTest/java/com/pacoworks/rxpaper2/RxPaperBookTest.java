@@ -316,7 +316,30 @@ public class RxPaperBookTest {
         ComplexObject existingResult = book.blockingRead(key, defaultValue);
         Assert.assertEquals(value, existingResult);
 
-        ComplexObject defaultResult = book.blockingRead(key, defaultValue);
+        String noKey = ":(";
+        ComplexObject defaultResult = book.blockingRead(noKey, defaultValue);
         Assert.assertEquals(defaultValue, defaultResult);
+    }
+
+    @Test
+    public void testUpdatesCheckedNewInstance() throws Exception {
+        final String key = "hello";
+        final ComplexObject value = ComplexObject.random();
+        final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
+        RxPaperBook.with("UPDATES_CH", Schedulers.trampoline()).observe(key, ComplexObject.class, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
+        updatesSubscriber.assertValueCount(0);
+        RxPaperBook.with("UPDATES_CH", Schedulers.trampoline()).write(key, value).subscribe();
+        updatesSubscriber.assertValueCount(1);
+        updatesSubscriber.assertValues(value);
+        final ComplexObject newValue = ComplexObject.random();
+        RxPaperBook.with("UPDATES_CH", Schedulers.trampoline()).write(key, newValue).subscribe();
+        updatesSubscriber.assertValueCount(2);
+        updatesSubscriber.assertValues(value, newValue);
+        // Error value
+        final int wrongValue = 3;
+        RxPaperBook.with("UPDATES_CH", Schedulers.trampoline()).write(key, wrongValue).test().assertComplete().assertNoErrors();
+        updatesSubscriber.assertValueCount(2);
+        updatesSubscriber.assertValues(value, newValue);
+        updatesSubscriber.assertNoErrors();
     }
 }
