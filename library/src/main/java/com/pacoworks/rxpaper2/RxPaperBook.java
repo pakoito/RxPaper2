@@ -40,7 +40,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 
 /**
@@ -149,7 +149,7 @@ public class RxPaperBook {
         synchronized (mUpdatesSubjectMap) {
             Subject updates = mUpdatesSubjectMap.get(name);
             if (updates == null) {
-                updates = PublishSubject.<Pair<String, ?>>create().toSerialized();
+                updates = BehaviorSubject.<Pair<String, ?>>create().toSerialized();
                 mUpdatesSubjectMap.put(name, updates);
             }
             return updates;
