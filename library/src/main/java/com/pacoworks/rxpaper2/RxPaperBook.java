@@ -26,6 +26,7 @@ import android.util.Pair;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.paperdb.Book;
@@ -44,33 +45,39 @@ import io.reactivex.subjects.Subject;
 
 /**
  * Adapter class with a new interface to perform PaperDB operations.
- * 
+ *
  * @author pakoito
  */
 public class RxPaperBook {
+
+    static final String DEFAULT_DB_NAME = "io.paperdb";
+
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
+    private static final ConcurrentHashMap<String, Subject<Pair<String, ?>>> mUpdatesSubjectMap = new ConcurrentHashMap<>();
 
     final Book book;
 
     final Scheduler scheduler;
 
-    final Subject<Pair<String, ?>> updates = PublishSubject.<Pair<String, ?>> create().toSerialized();
+    final Subject<Pair<String, ?>> updates;
 
     private RxPaperBook(Scheduler scheduler) {
         this.scheduler = scheduler;
         book = Paper.book();
+        updates = getUpdatesSubject(DEFAULT_DB_NAME);
     }
 
     private RxPaperBook(String customBook, Scheduler scheduler) {
         this.scheduler = scheduler;
         book = Paper.book(customBook);
+        updates = getUpdatesSubject(customBook);
     }
 
     /**
      * Initializes the underlying {@link Paper} database.
      * <p/>
      * This operation is required only once, but can be called multiple times safely.
-     * 
+     *
      * @param context application context
      */
     public static void init(Context context) {
@@ -90,7 +97,7 @@ public class RxPaperBook {
      * Open the main {@link Book} running its operations on {@link Schedulers#io()}.
      * <p/>
      * Requires calling {@link RxPaperBook#init(Context)} at least once beforehand.
-     * 
+     *
      * @return new RxPaperBook
      */
     public static RxPaperBook with() {
@@ -102,7 +109,7 @@ public class RxPaperBook {
      * Open a custom {@link Book} running its operations on {@link Schedulers#io()}.
      * <p/>
      * Requires calling {@link RxPaperBook#init(Context)} at least once beforehand.
-     * 
+     *
      * @param customBook book name
      * @return new RxPaperBook
      */
@@ -115,7 +122,7 @@ public class RxPaperBook {
      * Open the main {@link Book} running its operations on a provided scheduler.
      * <p/>
      * Requires calling {@link RxPaperBook#init(Context)} at least once beforehand.
-     * 
+     *
      * @param scheduler scheduler where operations will be run
      * @return new RxPaperBook
      */
@@ -128,14 +135,25 @@ public class RxPaperBook {
      * Open a custom {@link Book} running its operations on a provided scheduler.
      * <p/>
      * Requires calling {@link RxPaperBook#init(Context)} at least once beforehand.
-     * 
+     *
      * @param customBook book name
-     * @param scheduler scheduler where operations will be run
+     * @param scheduler  scheduler where operations will be run
      * @return new RxPaperBook
      */
     public static RxPaperBook with(String customBook, Scheduler scheduler) {
         assertInitialized();
         return new RxPaperBook(customBook, scheduler);
+    }
+
+    private static Subject<Pair<String, ?>> getUpdatesSubject(String name) {
+        synchronized (mUpdatesSubjectMap) {
+            Subject updates = mUpdatesSubjectMap.get(name);
+            if (updates == null) {
+                updates = PublishSubject.<Pair<String, ?>>create().toSerialized();
+                mUpdatesSubjectMap.put(name, updates);
+            }
+            return updates;
+        }
     }
 
     /**
@@ -144,7 +162,7 @@ public class RxPaperBook {
      * To deserialize correctly it is recommended to have an all-args constructor, but other types
      * may be available.
      *
-     * @param key object key is used as part of object's file name
+     * @param key   object key is used as part of object's file name
      * @param value object to save, must have no-arg constructor, can't be null.
      * @return this Book instance
      */
@@ -155,19 +173,30 @@ public class RxPaperBook {
                 book.write(key, value);
             }
         })
-        // FIXME in RxJava1 the error would be propagated to updates.
-        // In RxJava2 the error happens on the Completable this method returns.
-        // This andThen block reproduces the behavior in RxJava1.
-        .andThen(Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                try {
-                    updates.onNext(Pair.create(key, value));
-                } catch (Throwable t) {
-                    updates.onError(t);
-                }
-            }
-        })).subscribeOn(scheduler);
+                // FIXME in RxJava1 the error would be propagated to updates.
+                // In RxJava2 the error happens on the Completable this method returns.
+                // This andThen block reproduces the behavior in RxJava1.
+                .andThen(Completable.fromAction(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        try {
+                            updates.onNext(Pair.create(key, value));
+                        } catch (Throwable t) {
+                            updates.onError(t);
+                        }
+                    }
+                })).subscribeOn(scheduler);
+    }
+
+    /**
+     * Original non reactive read method from book.
+     *
+     * @param key          object key to read
+     * @param defaultValue value to be returned if key doesn't exist
+     * @return the saved object instance or defaultValue
+     */
+    public <T> T blockingRead(final String key, final T defaultValue) {
+        return book.read(key, defaultValue);
     }
 
     /**
@@ -175,7 +204,7 @@ public class RxPaperBook {
      * backward and forward compatibility: removed fields are ignored, new fields have their default
      * values.
      *
-     * @param key object key to read
+     * @param key          object key to read
      * @param defaultValue value to be returned if key doesn't exist
      * @return the saved object instance or defaultValue
      */
@@ -265,7 +294,7 @@ public class RxPaperBook {
     /**
      * Naive update subscription for saved objects. Subscription is filtered by key and type.
      *
-     * @param key object key
+     * @param key                  object key
      * @param backPressureStrategy how the backpressure is handled downstream
      * @return hot observable
      */
@@ -291,7 +320,7 @@ public class RxPaperBook {
      * {@link ClassCastException} if types do not match. For a safely checked and filtered version
      * use {@link this#observe(String, Class, BackpressureStrategy)}.
      *
-     * @param key object key
+     * @param key                  object key
      * @param backPressureStrategy how the backpressure is handled downstream
      * @return hot observable
      */
