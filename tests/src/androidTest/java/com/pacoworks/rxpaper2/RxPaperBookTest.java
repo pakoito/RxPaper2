@@ -91,7 +91,7 @@ public class RxPaperBookTest {
         final String key = "hello";
         final ComplexObject value = ComplexObject.random();
         book.write(key, value).subscribe();
-        final TestObserver<ComplexObject> testSubscriber = book.<ComplexObject> read(key).test();
+        final TestObserver<ComplexObject> testSubscriber = book.<ComplexObject>read(key).test();
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
@@ -99,11 +99,11 @@ public class RxPaperBookTest {
         testSubscriber.assertValues(value);
         // notFoundSubscriber
         String noKey = ":(";
-        final TestObserver<ComplexObject> notFoundSubscriber = book.<ComplexObject> read(noKey).test();
+        final TestObserver<ComplexObject> notFoundSubscriber = book.<ComplexObject>read(noKey).test();
         notFoundSubscriber.awaitTerminalEvent();
         notFoundSubscriber.assertError(IllegalArgumentException.class);
         // incorrectTypeSubscriber
-        book.<Integer> read(key).subscribe(new SingleObserver<Integer>() {
+        book.<Integer>read(key).subscribe(new SingleObserver<Integer>() {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -124,7 +124,7 @@ public class RxPaperBookTest {
         });
         // immutable objects
         book.write(key, new ImmutableObject(key)).subscribe();
-        final TestObserver<ImmutableObject> immutableReadSubscriber = book.<ImmutableObject> read(key).test();
+        final TestObserver<ImmutableObject> immutableReadSubscriber = book.<ImmutableObject>read(key).test();
         immutableReadSubscriber.awaitTerminalEvent();
         immutableReadSubscriber.assertNoErrors();
         immutableReadSubscriber.assertComplete();
@@ -137,7 +137,7 @@ public class RxPaperBookTest {
         final String key = "hello";
         final ComplexObject value = ComplexObject.random();
         book.write(key, value).subscribe();
-        final TestObserver<ComplexObject> testSubscriber = book.<ComplexObject> read(key).test();
+        final TestObserver<ComplexObject> testSubscriber = book.<ComplexObject>read(key).test();
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertNoErrors();
         testSubscriber.assertValueCount(1);
@@ -151,7 +151,7 @@ public class RxPaperBookTest {
         notFoundSubscriber.assertValueCount(1);
         notFoundSubscriber.assertValues(defaultValue);
         // incorrectTypeSubscriber
-        book.<Integer> read(key).subscribe(new SingleObserver<Integer>() {
+        book.<Integer>read(key).subscribe(new SingleObserver<Integer>() {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -181,7 +181,7 @@ public class RxPaperBookTest {
         errorSubscriber.assertComplete();
         errorSubscriber.assertNoErrors();
         book.write(key, ComplexObject.random()).subscribe();
-        final TestObserver<Void> testSubscriber = book.<ComplexObject> delete(key).test();
+        final TestObserver<Void> testSubscriber = book.<ComplexObject>delete(key).test();
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
@@ -246,7 +246,7 @@ public class RxPaperBookTest {
         final String key = "hello";
         final ComplexObject value = ComplexObject.random();
         final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
-        book.<ComplexObject> observeUnsafe(key, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
+        book.<ComplexObject>observeUnsafe(key, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
         updatesSubscriber.assertValueCount(0);
         book.write(key, value).subscribe();
         updatesSubscriber.assertValueCount(1);
@@ -303,5 +303,20 @@ public class RxPaperBookTest {
         updatesSubscriber.assertValueCount(2);
         updatesSubscriber.assertValues(value, newValue);
         updatesSubscriber.assertNoErrors();
+    }
+
+    @Test
+    public void testBlockingReadWithDefault() throws Exception {
+        RxPaperBook book = RxPaperBook.with("READ_WITH_DEFAULT", Schedulers.trampoline());
+        final String key = "hello";
+        final ComplexObject value = ComplexObject.random();
+        book.write(key, value).subscribe();
+
+        final ComplexObject defaultValue = ComplexObject.random();
+        ComplexObject existingResult = book.blockingRead(key, defaultValue);
+        Assert.assertEquals(value, existingResult);
+
+        ComplexObject defaultResult = book.blockingRead(key, defaultValue);
+        Assert.assertEquals(defaultValue, defaultResult);
     }
 }
