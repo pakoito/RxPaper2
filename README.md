@@ -142,13 +142,13 @@ observe.subscribe(new Subscriber() { /* ... */ });
 
 Observe filters on both the key and the type. Another version of observe that filters only on key and casts any values unsafely is provided under the name `observeUnsafe()`. It's recommended to use it with strict care.
 
-#### Exists
+#### Contains
 
-Exists is a `Single<Boolean>` operation that returns true if the key is on the current book, or false otherwise.
+Contains is a `Single<Boolean>` operation that returns true if the key is on the current book, or false otherwise.
 
 ```java
-Single<Boolean> exists = book.exists(key);
-exists.subscribe(new SingleSubscriber<Boolean>() { /* ... */ });
+Single<Boolean> contains = book.contains(key);
+contains.subscribe(new SingleSubscriber<Boolean>() { /* ... */ });
 ```
 
 #### Delete
