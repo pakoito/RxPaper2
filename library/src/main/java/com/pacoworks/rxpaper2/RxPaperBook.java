@@ -226,6 +226,7 @@ public class RxPaperBook {
      *
      * @param key object key
      * @return true if object with given key exists in Book storage, false otherwise
+     * @deprecated As of PaperDB release 2.6, replaced by {@link #contains(String)}}
      */
     public Single<Boolean> exists(final String key) {
         return Single.fromCallable(new Callable<Boolean>() {
@@ -309,5 +310,51 @@ public class RxPaperBook {
                         return (T) stringPair.second;
                     }
                 });
+    }
+
+    /**
+     * Checks whether the current book contains the key given
+     *
+     * @param key the key to look up
+     * @return true is the book contains a value for the given key
+     */
+    public Single<Boolean> contains(final String key) {
+        return Single.fromCallable(new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                return book.contains(key);
+            }
+        }).subscribeOn(scheduler);
+    }
+
+    /**
+     * Returns the path of the current book
+     *
+     * @return the path to the book
+     */
+    public Single<String> getPath() {
+        return Single.fromCallable(new Callable<String>() {
+            @Override
+            public String call() {
+                return book.getPath();
+            }
+        }).subscribeOn(scheduler);
+    }
+
+    /**
+     * Returns the path of the data stored at the key passed as a parameter.
+     * The returned path does not exist if the method has been called prior
+     * saving data for the given key.
+     *
+     * @param key the key to look up
+     * @return the path to the value stored at the key
+     */
+    public Single<String> getPath(final String key) {
+        return Single.fromCallable(new Callable<String>() {
+            @Override
+            public String call() {
+                return book.getPath(key);
+            }
+        }).subscribeOn(scheduler);
     }
 }
