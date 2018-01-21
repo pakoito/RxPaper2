@@ -171,7 +171,7 @@ exists.subscribe(new SingleSubscriber<List<String>>() { /* ... */ });
 
 #### GetPath
 
-Returns the path to the current book. Note that the path will not exist until a value is saved in the book. 
+Returns the path to the current book. Note that the path will not exist until any value is saved in the book. 
 
 ```java
 Single<String> path = book.getPath();
