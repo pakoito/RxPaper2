@@ -169,6 +169,22 @@ Single<List<String>> keys = book.keys();
 exists.subscribe(new SingleSubscriber<List<String>>() { /* ... */ });
 ```
 
+#### GetPath
+
+Returns the path to the current book. Note that the path will not exist until a value is saved in the book. 
+
+```java
+Single<String> path = book.getPath();
+path.subscribe(new SingleSubscriber<String>() { /* ... */ });
+```
+
+Returns the path to the key in the current book. Note that the path will not exist until a value is saved for that key. 
+
+```java
+Single<String> pathKey = book.getPath("my_key");
+pathKey.subscribe(new SingleSubscriber<String>() { /* ... */ });
+```
+
 #### Destroy
 
 Destroy is a `Completable` operation that deletes all keys and values on the current book.
