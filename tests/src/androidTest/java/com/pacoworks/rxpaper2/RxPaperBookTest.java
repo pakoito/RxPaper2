@@ -66,6 +66,8 @@ public class RxPaperBookTest {
         RxPaperBook.with("DESTROY").destroy().subscribe();
         RxPaperBook.with("UPDATES_UNCH").destroy().subscribe();
         RxPaperBook.with("UPDATES_CH").destroy().subscribe();
+        RxPaperBook.with("CONTAINS").destroy().subscribe();
+        RxPaperBook.with("PATH").destroy().subscribe();
     }
 
     @Test
@@ -73,12 +75,12 @@ public class RxPaperBookTest {
         RxPaperBook book = RxPaperBook.with("WRITE", Schedulers.trampoline());
         final String key = "hello";
         final Completable write = book.write(key, ComplexObject.random());
-        Assert.assertFalse(book.book.exist(key));
+        Assert.assertFalse(book.book.contains(key));
         final TestObserver<Void> testSubscriber = write.test();
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        Assert.assertTrue(book.book.exist(key));
+        Assert.assertTrue(book.book.contains(key));
     }
 
     @Test
@@ -185,7 +187,7 @@ public class RxPaperBookTest {
         testSubscriber.awaitTerminalEvent();
         testSubscriber.assertComplete();
         testSubscriber.assertNoErrors();
-        Assert.assertFalse(book.book.exist(key));
+        Assert.assertFalse(book.book.contains(key));
     }
 
     @Test
@@ -236,8 +238,8 @@ public class RxPaperBookTest {
         destroySubscriber.assertComplete();
         destroySubscriber.assertNoErrors();
         destroySubscriber.assertValueCount(0);
-        Assert.assertFalse(book.book.exist(key));
-        Assert.assertFalse(book.book.exist(key2));
+        Assert.assertFalse(book.book.contains(key));
+        Assert.assertFalse(book.book.contains(key2));
     }
 
     @Test
@@ -303,5 +305,54 @@ public class RxPaperBookTest {
         updatesSubscriber.assertValueCount(2);
         updatesSubscriber.assertValues(value, newValue);
         updatesSubscriber.assertNoErrors();
+    }
+
+    @Test
+    public void testContains() throws Exception {
+        RxPaperBook book = RxPaperBook.with("CONTAINS", Schedulers.trampoline());
+        final String key = "hello";
+        book.write(key, ComplexObject.random()).subscribe();
+        final TestObserver<Boolean> foundSubscriber = book.contains(key).test();
+        foundSubscriber.awaitTerminalEvent();
+        foundSubscriber.assertNoErrors();
+        foundSubscriber.assertValueCount(1);
+        foundSubscriber.assertValues(true);
+        // notFoundSubscriber
+        String noKey = ":(";
+        final TestObserver<Boolean> notFoundSubscriber = book.contains(noKey).test();
+        notFoundSubscriber.awaitTerminalEvent();
+        notFoundSubscriber.assertComplete();
+        notFoundSubscriber.assertValueCount(1);
+        notFoundSubscriber.assertValues(false);
+    }
+
+    @Test
+    public void testGetPath() throws Exception {
+        RxPaperBook book = RxPaperBook.with("PATH", Schedulers.trampoline());
+        final TestObserver<String> emptyBookSubscriber = book.getPath().test();
+        emptyBookSubscriber.awaitTerminalEvent();
+        emptyBookSubscriber.assertNoErrors();
+        emptyBookSubscriber.assertValueCount(1);
+        final String key = "hello";
+        book.write(key, ComplexObject.random()).subscribe();
+        final TestObserver<String> foundSubscriber = book.getPath().test();
+        foundSubscriber.awaitTerminalEvent();
+        foundSubscriber.assertNoErrors();
+        foundSubscriber.assertValueCount(1);
+    }
+
+    @Test
+    public void testGetPathForKey() throws Exception {
+        RxPaperBook book = RxPaperBook.with("PATH", Schedulers.trampoline());
+        final String key = "hello";
+        final TestObserver<String> emptyBookSubscriber = book.getPath(key).test();
+        emptyBookSubscriber.awaitTerminalEvent();
+        emptyBookSubscriber.assertNoErrors();
+        emptyBookSubscriber.assertValueCount(1);
+        book.write(key, ComplexObject.random()).subscribe();
+        final TestObserver<String> foundSubscriber = book.getPath(key).test();
+        foundSubscriber.awaitTerminalEvent();
+        foundSubscriber.assertNoErrors();
+        foundSubscriber.assertValueCount(1);
     }
 }
