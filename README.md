@@ -125,7 +125,7 @@ readOrDefault.subscribe(new SingleSubscriber<ComplexObject>() {
         });
 ```
 
-`read(key)` fails with `IllegalArgumentException` if the key is not found. `read(key, defaultValue)` returns a defualt value if the key is not found.
+`read(key)` fails with `IllegalArgumentException` if the key is not found. `read(key, defaultValue)` returns a default value if the key is not found.
 
 If the subscriber is not of the same type as the value stored expect a `ClassCastException`.
 
