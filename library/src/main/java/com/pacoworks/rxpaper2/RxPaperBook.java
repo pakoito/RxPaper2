@@ -71,7 +71,7 @@ public class RxPaperBook {
         book = Paper.bookOn(path);
     }
 
-    private RxPaperBook(String customBook, Scheduler scheduler, String path) {
+    private RxPaperBook(String path, String customBook, Scheduler scheduler) {
         this.scheduler = scheduler;
         book = Paper.bookOn(path, customBook);
     }
@@ -147,7 +147,7 @@ public class RxPaperBook {
         assertInitialized();
         return new RxPaperBook(customBook, scheduler);
     }
-    
+
     /**
      * Open a custom {@link Book} with custom storage location path running its operations on
      * {@link Schedulers#io()}.
@@ -189,7 +189,7 @@ public class RxPaperBook {
      */
     public static RxPaperBook withPath(String path, String customBook) {
         assertInitialized();
-        return new RxPaperBook(customBook, Schedulers.io(), path);
+        return new RxPaperBook(path, customBook, Schedulers.io());
     }
 
     /**
@@ -203,9 +203,9 @@ public class RxPaperBook {
      * @param customBook book name
      * @return new RxPaperBook
      */
-    public static RxPaperBook withPath(String path, Scheduler scheduler, String customBook) {
+    public static RxPaperBook withPath(String path, String customBook, Scheduler scheduler) {
         assertInitialized();
-        return new RxPaperBook(customBook, scheduler, path);
+        return new RxPaperBook(path, customBook, scheduler);
     }
 
     /**
