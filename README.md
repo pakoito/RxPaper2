@@ -64,6 +64,14 @@ RxPaperBook.with("my_book_name", Schedulers.newThread());
 
 Works with a custom book with the provided id/name, and executes operations on any provided scheduler.
 
+```java
+RxPaperBook.withPath(myPath);
+RxPaperBook.withPath(myPath, scheduler);
+RxPaperBook.withPath(myPath, "my_book_name");
+```
+
+Works with a custom storage location.
+
 ### Writing a value
 
 Write is a `Completable` operation, a subset of `Observable<T>` without a return value, just success/error. Completables can be converted back to Observables by using the operator `toObservable()`.
@@ -207,7 +215,7 @@ Add as a dependency to your `build.gradle`
     
     dependencies {
         ...
-        compile 'com.github.pakoito:RxPaper2:1.2.0'
+        compile 'com.github.pakoito:RxPaper2:1.3.0'
         ...
     }
 ```
@@ -225,7 +233,7 @@ or to your `pom.xml`
     <dependency>
         <groupId>com.github.pakoito</groupId>
         <artifactId>RxPaper2</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
     </dependency>
 ```
 
