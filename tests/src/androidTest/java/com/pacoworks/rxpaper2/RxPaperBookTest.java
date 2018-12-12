@@ -315,7 +315,7 @@ public class RxPaperBookTest {
         final String key = "hello";
         final ComplexObject value = ComplexObject.random();
         final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
-        book.<ComplexObject> observeUnsafe(BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
+        book.<ComplexObject> observeAllUnsafe(BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
         updatesSubscriber.assertValueCount(0);
         book.write(key, value).subscribe();
         updatesSubscriber.assertValueCount(1);
@@ -326,7 +326,7 @@ public class RxPaperBookTest {
         updatesSubscriber.assertValues(value, newValue);
         // Error value
         final int wrongValue = 3;
-        book.<ComplexObject>observeUnsafe(BackpressureStrategy.MISSING)
+        book.<ComplexObject>observeAllUnsafe(BackpressureStrategy.MISSING)
                 .subscribe(new Subscriber<ComplexObject>() {
                     @Override
                     public void onComplete() {
@@ -357,7 +357,7 @@ public class RxPaperBookTest {
         final String key = "hello";
         final ComplexObject value = ComplexObject.random();
         final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
-        book.observe(ComplexObject.class, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
+        book.observeAll(ComplexObject.class, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
         updatesSubscriber.assertValueCount(0);
         book.write(key, value).subscribe();
         updatesSubscriber.assertValueCount(1);

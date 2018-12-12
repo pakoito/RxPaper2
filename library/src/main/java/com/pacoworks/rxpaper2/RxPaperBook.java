@@ -388,7 +388,7 @@ public class RxPaperBook {
      * @param backPressureStrategy how the backpressure is handled downstream
      * @return hot observable
      */
-    public <T> Flowable<T> observe(final Class<T> clazz, BackpressureStrategy backPressureStrategy) {
+    public <T> Flowable<T> observeAll(final Class<T> clazz, BackpressureStrategy backPressureStrategy) {
         return updates.toFlowable(backPressureStrategy)
                 .map(new Function<Pair<String, ?>, Object>() {
                     @Override
@@ -403,13 +403,13 @@ public class RxPaperBook {
      * <p/>
      * This method will return all objects casted unsafely, and throw
      * {@link ClassCastException} if types do not match. For a safely checked and filtered version
-     * use {@link this#observe(Class, BackpressureStrategy)}.
+     * use {@link this#observeAll(Class, BackpressureStrategy)}.
      *
      * @param backPressureStrategy how the backpressure is handled downstream
      * @return hot observable
      */
     @SuppressWarnings("unchecked")
-    public <T> Flowable<T> observeUnsafe(BackpressureStrategy backPressureStrategy) {
+    public <T> Flowable<T> observeAllUnsafe(BackpressureStrategy backPressureStrategy) {
         return updates.toFlowable(backPressureStrategy)
                 .map(new Function<Pair<String, ?>, T>() {
                     @Override
