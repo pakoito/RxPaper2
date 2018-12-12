@@ -66,6 +66,8 @@ public class RxPaperBookTest {
         RxPaperBook.with("DESTROY").destroy().subscribe();
         RxPaperBook.with("UPDATES_UNCH").destroy().subscribe();
         RxPaperBook.with("UPDATES_CH").destroy().subscribe();
+        RxPaperBook.with("UPDATES_ALL_UNCH").destroy().subscribe();
+        RxPaperBook.with("UPDATES_ALL_CH").destroy().subscribe();
         RxPaperBook.with("CONTAINS").destroy().subscribe();
         RxPaperBook.with("PATH").destroy().subscribe();
     }
@@ -291,6 +293,71 @@ public class RxPaperBookTest {
         final ComplexObject value = ComplexObject.random();
         final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
         book.observe(key, ComplexObject.class, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
+        updatesSubscriber.assertValueCount(0);
+        book.write(key, value).subscribe();
+        updatesSubscriber.assertValueCount(1);
+        updatesSubscriber.assertValues(value);
+        final ComplexObject newValue = ComplexObject.random();
+        book.write(key, newValue).subscribe();
+        updatesSubscriber.assertValueCount(2);
+        updatesSubscriber.assertValues(value, newValue);
+        // Error value
+        final int wrongValue = 3;
+        book.write(key, wrongValue).test().assertComplete().assertNoErrors();
+        updatesSubscriber.assertValueCount(2);
+        updatesSubscriber.assertValues(value, newValue);
+        updatesSubscriber.assertNoErrors();
+    }
+
+    @Test
+    public void testUpdatesAllUnchecked() throws Exception {
+        RxPaperBook book = RxPaperBook.with("UPDATES_ALL_UNCH", Schedulers.trampoline());
+        final String key = "hello";
+        final ComplexObject value = ComplexObject.random();
+        final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
+        book.<ComplexObject> observeUnsafe(BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
+        updatesSubscriber.assertValueCount(0);
+        book.write(key, value).subscribe();
+        updatesSubscriber.assertValueCount(1);
+        updatesSubscriber.assertValue(value);
+        final ComplexObject newValue = ComplexObject.random();
+        book.write(key, newValue).subscribe();
+        updatesSubscriber.assertValueCount(2);
+        updatesSubscriber.assertValues(value, newValue);
+        // Error value
+        final int wrongValue = 3;
+        book.<ComplexObject>observeUnsafe(BackpressureStrategy.MISSING)
+                .subscribe(new Subscriber<ComplexObject>() {
+                    @Override
+                    public void onComplete() {
+                        Assert.fail("Expected nothing");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Assert.fail(e.getMessage());
+                    }
+
+                    @Override
+                    public void onSubscribe(Subscription s) {
+
+                    }
+
+                    @Override
+                    public void onNext(ComplexObject complexObject) {
+                        Assert.fail("Expected nothing");
+                    }
+                });
+        book.write(key, wrongValue).test().assertComplete().assertNoErrors();
+    }
+
+    @Test
+    public void testUpdatesAllChecked() throws Exception {
+        RxPaperBook book = RxPaperBook.with("UPDATES_ALL_CH", Schedulers.trampoline());
+        final String key = "hello";
+        final ComplexObject value = ComplexObject.random();
+        final TestSubscriber<ComplexObject> updatesSubscriber = TestSubscriber.create();
+        book.observe(ComplexObject.class, BackpressureStrategy.MISSING).subscribe(updatesSubscriber);
         updatesSubscriber.assertValueCount(0);
         book.write(key, value).subscribe();
         updatesSubscriber.assertValueCount(1);

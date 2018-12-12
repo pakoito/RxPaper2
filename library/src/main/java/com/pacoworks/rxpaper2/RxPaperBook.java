@@ -383,6 +383,43 @@ public class RxPaperBook {
     }
 
     /**
+     * Naive update subscription for saved objects. Subscription is filtered by type.
+     *
+     * @param backPressureStrategy how the backpressure is handled downstream
+     * @return hot observable
+     */
+    public <T> Flowable<T> observe(final Class<T> clazz, BackpressureStrategy backPressureStrategy) {
+        return updates.toFlowable(backPressureStrategy)
+                .map(new Function<Pair<String, ?>, Object>() {
+                    @Override
+                    public Object apply(Pair<String, ?> stringPair) {
+                        return stringPair.second;
+                    }
+                }).ofType(clazz);
+    }
+
+    /**
+     * Naive update subscription for saved objects.
+     * <p/>
+     * This method will return all objects casted unsafely, and throw
+     * {@link ClassCastException} if types do not match. For a safely checked and filtered version
+     * use {@link this#observe(Class, BackpressureStrategy)}.
+     *
+     * @param backPressureStrategy how the backpressure is handled downstream
+     * @return hot observable
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Flowable<T> observeUnsafe(BackpressureStrategy backPressureStrategy) {
+        return updates.toFlowable(backPressureStrategy)
+                .map(new Function<Pair<String, ?>, T>() {
+                    @Override
+                    public T apply(Pair<String, ?> stringPair) {
+                        return (T) stringPair.second;
+                    }
+                });
+    }
+
+    /**
      * Checks whether the current book contains the key given
      *
      * @param key the key to look up
