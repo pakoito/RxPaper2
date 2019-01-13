@@ -215,7 +215,7 @@ Add as a dependency to your `build.gradle`
     
     dependencies {
         ...
-        compile 'com.github.pakoito:RxPaper2:1.3.0'
+        compile 'com.github.pakoito:RxPaper2:1.4.0'
         ...
     }
 ```
@@ -239,7 +239,7 @@ or to your `pom.xml`
 
 ## License
 
-Copyright (c) 2017 pakoito & 2015 César Ferreira
+Copyright (c) 2019 pakoito & 2015 César Ferreira
 
 The MIT License (MIT)
 
