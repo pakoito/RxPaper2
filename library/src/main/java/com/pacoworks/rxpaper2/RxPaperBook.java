@@ -47,14 +47,13 @@ import io.reactivex.subjects.Subject;
  * 
  * @author pakoito
  */
+@SuppressWarnings("unused")
 public class RxPaperBook {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
     final Book book;
-
-    final Scheduler scheduler;
-
-    final Subject<Pair<String, ?>> updates = PublishSubject.<Pair<String, ?>> create().toSerialized();
+    private final Scheduler scheduler;
+    private final Subject<Pair<String, ?>> updates = PublishSubject.<Pair<String, ?>>create().toSerialized();
 
     private RxPaperBook(Scheduler scheduler) {
         this.scheduler = scheduler;
@@ -230,7 +229,7 @@ public class RxPaperBook {
         // This andThen block reproduces the behavior in RxJava1.
         .andThen(Completable.fromAction(new Action() {
             @Override
-            public void run() throws Exception {
+            public void run() {
                 try {
                     updates.onNext(Pair.create(key, value));
                 } catch (Throwable t) {
@@ -302,6 +301,7 @@ public class RxPaperBook {
         return Single.fromCallable(new Callable<Boolean>() {
             @Override
             public Boolean call() {
+                //noinspection deprecation
                 return book.exist(key);
             }
         }).subscribeOn(scheduler);

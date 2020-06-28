@@ -80,7 +80,7 @@ Write is a `Completable` operation, a subset of `Observable<T>` without a return
 RxPaperBook book = RxPaperBook.with("my-book");
 Completable write = book.write(key, value);
 // Because RxJava is lazily evaluated, the operation is not executed until the Observable is subscribed.
-write.subscribe(new Completable.CompletableSubscriber() {
+write.subscribe(new CompletableObserver() {
             @Override
             public void onCompleted() {
                 // Operation suceeded
@@ -165,7 +165,7 @@ Delete is a `Completable` operation. Deletes data stored for a key on the curren
 
 ```java
 Completable delete = book.delete(key);
-delete.subscribe(new Completable.CompletableSubscriber() { /* ... */ });
+delete.subscribe(new CompletableObserver() { /* ... */ });
 ```
 
 #### Keys
@@ -199,7 +199,7 @@ Destroy is a `Completable` operation that deletes all keys and values on the cur
 
 ```java
 Completable destroy = book.destroy();
-destroy.subscribe(new Completable.CompletableSubscriber() { /* ... */ });
+destroy.subscribe(new CompletableObserver() { /* ... */ });
 ```
 
 ## Distribution
