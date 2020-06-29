@@ -22,16 +22,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.3'
 
     defaultConfig {
         applicationId "com.pacoworks.rxpaper.sample"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0.0"
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
@@ -42,12 +42,12 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:design:27.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
 
-    compile project(':library')
+    implementation project(':library')
 
-    testCompile 'junit:junit:4.12'
-    androidTestCompile "com.android.support.test:runner:1.0.1"
-    androidTestCompile "com.android.support.test:rules:1.0.1"
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }
