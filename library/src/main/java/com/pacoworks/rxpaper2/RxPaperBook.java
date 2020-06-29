@@ -52,8 +52,8 @@ public class RxPaperBook {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
     final Book book;
-    private final Scheduler scheduler;
-    private final Subject<Pair<String, ?>> updates = PublishSubject.<Pair<String, ?>>create().toSerialized();
+    final Scheduler scheduler;
+    final Subject<Pair<String, ?>> updates = PublishSubject.<Pair<String, ?>>create().toSerialized();
 
     private RxPaperBook(Scheduler scheduler) {
         this.scheduler = scheduler;
