@@ -1,5 +1,7 @@
 # RxPaper2
 
+[![](https://jitpack.io/v/pakoito/RxPaper2.svg)](https://jitpack.io/#pakoito/RxPaper2)
+
 RxPaper is a [RxJava](https://github.com/ReactiveX/RxJava) wrapper for the cool [Paper](https://github.com/pilgr/Paper) library. It's a clean rewrite of the original [RxPaper](http://www.github.com/cesarferreira/rxpaper) library by [César Ferreira](http://www.github.com/cesarferreira).
 
 ![Paper icon](https://raw.githubusercontent.com/pilgr/Paper/master/paper_icon.png)
