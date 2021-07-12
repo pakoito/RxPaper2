@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    api 'io.paperdb:paperdb:2.7.1'
-    api 'io.reactivex.rxjava2:rxjava:2.2.10'
-    testImplementation 'junit:junit:4.13'
+    api 'io.github.pilgr:paperdb:2.7.1'
+    api 'io.reactivex.rxjava2:rxjava:2.2.21'
+    testImplementation 'junit:junit:4.13.2'
 }
